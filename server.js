@@ -5,15 +5,16 @@ const bodyParser = require('body-parser')
 const path = require('path')
 const mongoose = require('mongoose')
 // here are my route modules for import
-const Auth= require('./routes/Auth')
+const Auth = require('./routes/Auth')
 
 const app = express()
 
 // mongo connection
 mongoose.connect(process.env.DB_URL,
     {
-        autoCreate: true
-    }).then(() => { console.log("mongoose connected") }).catch((err) => console.log(err))
+        autoCreate: true,
+    }).then(() => { console.log("mongoose connected") })
+    .catch((err) => console.log(err))
 
 // middlewares
 app.use(express.json({ limit: "10mb" }))
