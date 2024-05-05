@@ -3,8 +3,10 @@ const bcrypt = require("bcrypt")
 
 async function registerController(req, resp) {
     try {
-        const { name, email, password, dob, phone_no, role, ip_addr, browser_info, user_os } = req.body
+        const { name, email, password, dob, phone_no } = req.body
         // if user already there
+        const browser_info = req.headers['user-agent']
+        const ip_addr = req.ip || req.connection.remoteAddress
         const userexists = await Users.findOne({ email })
         if (userexists) {
             return resp.status(500).json({ message: "already used email" })
@@ -16,10 +18,9 @@ async function registerController(req, resp) {
             password: hashedPass,
             dob,
             phone_no,
-            role,
+            role:"admin",
             ip_addr,
             browser_info,
-            user_os
         })
         await newUser.save().then(savedUser => console.log(savedUser)).catch(err => { console.log(err) });
         console.log("saved")
