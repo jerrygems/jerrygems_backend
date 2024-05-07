@@ -1,35 +1,38 @@
 const WriteUpsMod = require("../../models/WriteUpsMod")
+const jwt = require("jsonwebtoken")
 
-async function writeupCreate(req, resp) {
+async function writeupsCreate(req, resp) {
     try {
-        const { title, description, content, author, publicationDate, tags } = req.body
-        const newWriteUp = new WriteUpsMod({
+        const { title, description, content, publicationDate, tags } = req.body
+        const decodedToken = jwt.decode(req.headers.authorization)
+        console.log(decodedToken)
+        const newWriteup = new WriteUpsMod({
             title,
             description,
             content,
-            author,
+            author: decodedToken.userId,
             publicationDate,
             tags
         })
-        await newWriteUp.save().catch(err => { console.log(err) })
-        return resp.status(200).json({ message: message.err })
+        await newWriteup.save().catch(err => { console.log(err) })
+        console.log("done")
+        return resp.status(200).json({ message: "done" })
     } catch (err) {
         return resp.status(500).json({ message: message.err })
     }
 
 }
-async function writeupUpdate(req, resp) {
+async function writeupsUpdate(req, resp) {
     try {
-        const { title, description, content, author, publicationDate, tags } = req.body
-        const writeup_id = req.params.id
-        const existingWriteup = await WriteUpsMod.findById(writeup_id)
+        const { writeupid, title, description, content, publicationDate, tags } = req.body
+
+        const existingWriteup = await WriteUpsMod.findById(writeupid)
         if (!existingWriteup) {
-            return resp.status(500).json({ message: "blog doesn't exist" })
+            return resp.status(500).json({ message: "writeup doesn't exist" })
         }
         existingWriteup.title = title
         existingWriteup.description = description
         existingWriteup.content = content
-        existingWriteup.author = author
         existingWriteup.publicationDate = publicationDate
         existingWriteup.tags = tags
 
@@ -38,25 +41,51 @@ async function writeupUpdate(req, resp) {
     } catch (err) {
         return resp.status(500).json({ message: message.err })
     }
-
 }
-async function writeupDelete(req, resp) {
+
+// async function writeupDelete(req, resp) {
+//     try {
+//         const writeup_id = req.params.id
+//         const existingwriteup = await writeupsMod.findById(writeup_id)
+//         if (!existingwriteup) {
+//             return resp.status(500).json({ message: "writeup doesn't exists" })
+//         }
+//         existingwriteup.remove()
+//         return resp.status(200).json({ message: "removed successfully" })
+//     } catch (err) {
+//         return resp.status(500).json({ message: message.err })
+//     }
+
+// }
+
+// get requests here
+async function getallWriteups(req, resp) {
     try {
-        const writeup_id = req.params.id
-        const existingWriteup = await WriteUpsMod.findById(writeup_id)
-        if (!existingWriteup) {
-            return resp.status(500).json({ message: "blog doesn't exists" })
-        }
-        existingWriteup.remove()
-        return resp.status(200).json({ message: "removed successfully" })
+        data = await WriteUpsMod.find()
+        resp.status(200).json({ message: data })
     } catch (err) {
-        return resp.status(500).json({ message: message.err })
+        console.log(err)
+        resp.status(401).json({ message: err.message })
     }
-
 }
 
+async function getWriteup(req, resp) {
+    try {
+        const { writeupid } = req.params
+        data = await WriteUpsMod.findById(writeupid)
+        if (!data) {
+            return resp.status.json({ message: "writeup not found" })
+        }
+        resp.status(200).json({ message: data })
+    } catch (err) {
+        console.log(err)
+        resp.status(401).json({ message: err.message })
+    }
+}
 module.exports = {
-    create: writeupCreate,
-    update: writeupUpdate,
-    delete: writeupDelete
+    create: writeupsCreate,
+    update: writeupsUpdate,
+    // delete: writeupsDelete,
+    getallWriteups: getallWriteups,
+    getWriteup: getWriteup
 }
