@@ -5,14 +5,14 @@ async function writeupsCreate(req, resp) {
     try {
         const { title, description, content, publicationDate, tags } = req.body
         const decodedToken = jwt.decode(req.headers.authorization)
-        console.log(decodedToken)
+        console.log(req.body)
         const newWriteup = new WriteUpsMod({
             title,
-            description,
+            description:description,
             content,
             author: decodedToken.userId,
             publicationDate,
-            tags
+            keywords: tags
         })
         await newWriteup.save().catch(err => { console.log(err) })
         console.log("done")

@@ -13,6 +13,9 @@ const Books = require("./routes/Books")
 const Blogs = require("./routes/Blogs")
 const UsersInf = require("./routes/Users")
 const WriteUps =  require("./routes/WriteUps")
+const KHB =  require("./routes/KHB")
+const GHB =  require("./routes/GHB")
+const ASB =  require("./routes/ASB")
 
 
 // mongo connection
@@ -31,9 +34,11 @@ app.use(cookieParser())
 app.use('/auth', LoginOrRegister) // goes to login or register route
 app.use('/books', Books) // goes to books route
 app.use('/blogs', Blogs) // goes to blogs route
-app.use('/users', UsersInf) // goes to blogs route
-app.use('/writeups', WriteUps) // goes to blogs route
-
+app.use('/users', UsersInf) // goes to users route
+app.use('/writeups', WriteUps) // goes to writeups route
+app.use('/khb', KHB)
+app.use('/ghb', GHB)
+app.use('/asb', ASB)
 
 app.listen(process.env.PORT || 5001, () => { console.log('server running') })
 

@@ -1,31 +1,35 @@
 const ASBMod = require("../../models/ASBMod")
+const jwt = require("jsonwebtoken")
 
 async function asbCreate(req, resp) {
     try {
-        const { chap_no, title, description, content, author, publicationDate, keywords } = req.body
-        const newASBChap = new ASBMod({
-            chap_no,
+        const { chap_no, title, description, content, publicationDate, tags } = req.body
+        const decodedToken = jwt.decode(req.headers.authorization)
+        console.log(decodedToken)
+        const newChap = new ASBMod({
+            chap_no: chap_no,
             title,
             description,
             content,
-            author,
+            author: decodedToken.userId,
             publicationDate,
-            keywords
+            tags
         })
-        console.log(newASBChap)
-        await newASBChap.save().catch(err => console.log(err))
-        return resp.status(200).json({ message: "chapter created successfully" })
+        await newChap.save().catch(err => { console.log(err) })
+        console.log("done")
+        return resp.status(200).json({ message: "done" })
     } catch (err) {
-        return resp.status(500).json({ message: "something went wrong " })
+        return resp.status(500).json({ message: err.message })
     }
+
 }
 
 async function asbUpdate(req, resp) {
     try {
-        const { chap_no, title, description, content, author, publicationDate, keywords } = req.body
-        const chap_id = req.params.id
+        const { asbid, chap_no, title, description, content, publicationDate, keywords } = req.body
 
-        const existingChap = await ASBMod.findById(chap_id)
+        const existingChap = await ASBMod.findById(asbid)
+        console.log(asbid)
         if (!existingChap) {
             return resp.status(500).json("document doesn't exist already")
         }
@@ -35,14 +39,13 @@ async function asbUpdate(req, resp) {
         existingChap.title = title
         existingChap.description = description
         existingChap.content = content
-        existingChap.author = author
         existingChap.publicationDate = publicationDate
         existingChap.keywords = keywords
 
         await existingChap.save()
-        return resp.status(200).json({ message: "chapter updated successfully" })
+        resp.status(200).json({ message: "chapter updated successfully" })
     } catch (err) {
-        return resp.status(500).json({ message: "something went wrong " })
+        resp.status(500).json({ message: "something went wrong ",err })
     }
 }
 
@@ -58,14 +61,41 @@ async function asbDelete(req, resp) {
         existingChap.remove()
 
 
-        return resp.status(200).json({ message: "chapter updated successfully" })
+        resp.status(200).json({ message: "chapter updated successfully" })
     } catch (err) {
-        return resp.status(500).json({ message: "something went wrong " })
+        resp.status(500).json({ message: "something went wrong " })
     }
 }
+
+async function getasbChap(req, resp) {
+    try {
+        const { asbid } = req.params
+        data = await ASBMod.findById(asbid)
+        if (!data) {
+            return resp.status.json({ message: "writeup not found" })
+        }
+        resp.status(200).json({ message: data })
+    } catch (err) {
+        console.log(err)
+        resp.status(401).json({ message: err.message })
+    }
+}
+
+async function getasbChaps(req, resp) {
+    try {
+        data = await ASBMod.find()
+        resp.status(200).json({ message: data })
+    } catch (err) {
+        console.log(err)
+        resp.status(401).json({ message: err.message })
+    }
+}
+
 
 module.exports = {
     create: asbCreate,
     update: asbUpdate,
     delete: asbDelete,
+    getasbchaps: getasbChaps,
+    getasbchap: getasbChap
 }
