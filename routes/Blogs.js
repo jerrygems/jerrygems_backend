@@ -15,7 +15,7 @@ router.delete("/delete", verifyAdmin, (req, resp, next) => {
     blogsController.delete(req, resp, next)
 })// goes to corresponding controller
 
-router.get("/getblogs", verifyAdmin, (req, resp, next) => {
+router.get("/getblogs", (req, resp, next) => {
     blogsController.getallblogs(req, resp, next)
 })// goes to corresponding controller
 

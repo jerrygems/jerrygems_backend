@@ -16,7 +16,8 @@ const WriteUps =  require("./routes/WriteUps")
 const KHB =  require("./routes/KHB")
 const GHB =  require("./routes/GHB")
 const ASB =  require("./routes/ASB")
-
+const Announcements = require("./routes/Announcements")
+const Events = require("./routes/Events")
 
 // mongo connection
 mongoose.connect(process.env.DB_URL,
@@ -39,6 +40,8 @@ app.use('/writeups', WriteUps) // goes to writeups route
 app.use('/khb', KHB)
 app.use('/ghb', GHB)
 app.use('/asb', ASB)
+app.use('/announcements', Announcements)
+app.use('/events', Events)
 
 app.listen(process.env.PORT || 5001, () => { console.log('server running') })
 
