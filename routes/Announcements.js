@@ -11,7 +11,7 @@ router.delete("/delete", verifyAdmin, (req, resp, next) => {
     AnnouncementController.delete(req, resp, next)
 })// goes to corresponding controller
 
-router.get("/getannouncements", verifyAdmin, (req, resp, next) => {
+router.get("/getannouncements", (req, resp, next) => {
     AnnouncementController.getanons(req, resp, next)
 })// goes to corresponding controller
 

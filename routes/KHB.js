@@ -15,11 +15,11 @@ router.delete("/delete", verifyAdmin, (req, resp, next) => {
     khbController.delete(req, resp, next)
 })// goes to corresponding controller
 
-router.get("/getkhbchaps", verifyAdmin, (req, resp, next) => {
+router.get("/getkhbchaps", (req, resp, next) => {
     khbController.getkhbchaps(req, resp, next)
 })// goes to corresponding controller
 
-router.get("/getkhbchap/:khbid", verifyAdmin, (req, resp, next) => {
+router.get("/getkhbchap/:khbid", (req, resp, next) => {
     khbController.getkhbchap(req, resp, next)
 })// goes to corresponding controller
 

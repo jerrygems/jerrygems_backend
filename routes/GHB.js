@@ -15,11 +15,11 @@ router.delete("/delete", verifyAdmin, (req, resp, next) => {
     ghbController.delete(req, resp, next)
 })// goes to corresponding controller
 
-router.get("/getghbchaps", verifyAdmin, (req, resp, next) => {
+router.get("/getghbchaps", (req, resp, next) => {
     ghbController.getghbchaps(req, resp, next)
 })// goes to corresponding controller
 
-router.get("/getghbchap/:ghbid", verifyAdmin, (req, resp, next) => {
+router.get("/getghbchap/:ghbid", (req, resp, next) => {
     ghbController.getghbchap(req, resp, next)
 })// goes to corresponding controller
 

@@ -72,7 +72,7 @@ async function getasbChap(req, resp) {
         const { asbid } = req.params
         data = await ASBMod.findById(asbid)
         if (!data) {
-            return resp.status.json({ message: "writeup not found" })
+            return resp.status(401).json({ message: "writeup not found" })
         }
         resp.status(200).json({ message: data })
     } catch (err) {

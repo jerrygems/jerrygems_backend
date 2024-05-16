@@ -15,11 +15,11 @@ router.delete("/delete", verifyAdmin, (req, resp, next) => {
     writeupsController.delete(req, resp, next)
 })// goes to corresponding controller
 
-router.get("/getwriteups", verifyAdmin, (req, resp, next) => {
+router.get("/getwriteups", (req, resp, next) => {
     writeupsController.getallWriteups(req, resp, next)
 })// goes to corresponding controller
 
-router.get("/getwriteup/:writeupid", verifyAdmin, (req, resp, next) => {
+router.get("/getwriteup/:writeupid", (req, resp, next) => {
     writeupsController.getWriteup(req, resp, next)
 })// goes to corresponding controller
 

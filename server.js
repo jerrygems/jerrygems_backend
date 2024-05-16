@@ -9,7 +9,6 @@ const app = express()
 
 // here are my route modules for import
 const LoginOrRegister = require("./routes/LoginOrRegister")
-const Books = require("./routes/Books")
 const Blogs = require("./routes/Blogs")
 const UsersInf = require("./routes/Users")
 const WriteUps =  require("./routes/WriteUps")
@@ -33,7 +32,6 @@ app.use(cookieParser())
 
 // routes
 app.use('/auth', LoginOrRegister) // goes to login or register route
-app.use('/books', Books) // goes to books route
 app.use('/blogs', Blogs) // goes to blogs route
 app.use('/users', UsersInf) // goes to users route
 app.use('/writeups', WriteUps) // goes to writeups route

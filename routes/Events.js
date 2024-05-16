@@ -11,7 +11,7 @@ router.delete("/delete", verifyAdmin, (req, resp, next) => {
     EventsController.delete(req, resp, next)
 })// goes to corresponding controller
 
-router.get("/getevents", verifyAdmin, (req, resp, next) => {
+router.get("/getevents", (req, resp, next) => {
     EventsController.getevents(req, resp, next)
 })// goes to corresponding controller
 
