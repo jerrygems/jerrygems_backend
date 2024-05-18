@@ -10,6 +10,22 @@ async function getAllUsersInfo(req, resp) {
     }
 }
 
+async function verifyRole(req, resp) {
+    try {
+        const token = req.headers.authorization.split(' ')[1];
+        if (!token) {
+            return resp.status(401).send('Access Denied');
+        }
+        const verified = jwt.verify(token, process.env.JWT_SECRET);
+        resp.json({ role: verified.role });
+
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+
 module.exports = {
-    getAllUsersInfo: getAllUsersInfo
+    getAllUsersInfo: getAllUsersInfo,
+    verifyRole : verifyRole
 }
