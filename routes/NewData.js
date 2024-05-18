@@ -1,0 +1,9 @@
+const express = require("express")
+const router = express.Router()
+const NewDataController = require("../controllers/NewDataController")
+
+router.get("/latest", (req, resp, next) => {
+    NewDataController.latest(req, resp, next)
+})
+
+module.exports = router

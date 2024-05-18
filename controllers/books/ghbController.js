@@ -70,7 +70,7 @@ async function ghbDelete(req, resp) {
 async function getghbChap(req, resp) {
     try {
         const { ghbid } = req.params
-        data = await GHBMod.findById(ghbid)
+        data = await GHBMod.findById(ghbid).populate("author","-_id name")
         if (!data) {
             return resp.status.json({ message: "writeup not found" })
         }
@@ -83,7 +83,10 @@ async function getghbChap(req, resp) {
 
 async function getghbChaps(req, resp) {
     try {
-        data = await GHBMod.find()
+        data = await GHBMod.find().populate("author","-_id name")
+        if (!data) {
+            return resp.status.json({ message: "writeup not found" })
+        }
         resp.status(200).json({ message: data })
     } catch (err) {
         console.log(err)

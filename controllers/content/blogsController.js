@@ -1,4 +1,5 @@
 const BlogsMod = require("../../models/BlogsMod")
+const Users = require("../../models/UsersMod")
 const jwt = require("jsonwebtoken")
 
 async function blogsCreate(req, resp) {
@@ -61,7 +62,10 @@ async function blogsUpdate(req, resp) {
 // get requests here
 async function getallblogs(req, resp) {
     try {
-        data = await BlogsMod.find()
+        data = await BlogsMod.find().populate("author", "-_id name")
+        if (!data) {
+            return resp.status.json({ message: "blog not found" })
+        }
         resp.status(200).json({ message: data })
     } catch (err) {
         console.log(err)
@@ -72,10 +76,11 @@ async function getallblogs(req, resp) {
 async function getblog(req, resp) {
     try {
         const { blogid } = req.params
-        data = await BlogsMod.findById(blogid)
+        data = await BlogsMod.findById(blogid).populate("author", "-_id name")
         if (!data) {
             return resp.status.json({ message: "blog not found" })
         }
+
         resp.status(200).json({ message: data })
     } catch (err) {
         console.log(err)

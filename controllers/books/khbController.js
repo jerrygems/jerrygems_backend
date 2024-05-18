@@ -45,7 +45,7 @@ async function khbUpdate(req, resp) {
         await existingChap.save()
         resp.status(200).json({ message: "chapter updated successfully" })
     } catch (err) {
-        resp.status(500).json({ message: "something went wrong ",err })
+        resp.status(500).json({ message: "something went wrong ", err })
     }
 }
 
@@ -70,7 +70,7 @@ async function khbDelete(req, resp) {
 async function getkhbChap(req, resp) {
     try {
         const { khbid } = req.params
-        data = await KHBMod.findById(khbid)
+        data = await KHBMod.findById(khbid).populate("author", "-_id name")
         if (!data) {
             return resp.status.json({ message: "writeup not found" })
         }
@@ -83,7 +83,10 @@ async function getkhbChap(req, resp) {
 
 async function getkhbChaps(req, resp) {
     try {
-        data = await KHBMod.find()
+        data = await KHBMod.find().populate("author", "-_id name")
+        if (!data) {
+            return resp.status.json({ message: "writeup not found" })
+        }
         resp.status(200).json({ message: data })
     } catch (err) {
         console.log(err)

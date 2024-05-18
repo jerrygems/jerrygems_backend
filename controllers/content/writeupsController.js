@@ -61,7 +61,10 @@ async function writeupsUpdate(req, resp) {
 // get requests here
 async function getallWriteups(req, resp) {
     try {
-        data = await WriteUpsMod.find()
+        data = await WriteUpsMod.find().populate("author","-_id name")
+        if (!data) {
+            return resp.status.json({ message: "writeup not found" })
+        }
         resp.status(200).json({ message: data })
     } catch (err) {
         console.log(err)
@@ -72,7 +75,7 @@ async function getallWriteups(req, resp) {
 async function getWriteup(req, resp) {
     try {
         const { writeupid } = req.params
-        data = await WriteUpsMod.findById(writeupid)
+        data = await WriteUpsMod.findById(writeupid).populate("author","-_id name")
         if (!data) {
             return resp.status.json({ message: "writeup not found" })
         }

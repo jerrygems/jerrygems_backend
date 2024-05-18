@@ -45,7 +45,7 @@ async function asbUpdate(req, resp) {
         await existingChap.save()
         resp.status(200).json({ message: "chapter updated successfully" })
     } catch (err) {
-        resp.status(500).json({ message: "something went wrong ",err })
+        resp.status(500).json({ message: "something went wrong ", err })
     }
 }
 
@@ -70,9 +70,9 @@ async function asbDelete(req, resp) {
 async function getasbChap(req, resp) {
     try {
         const { asbid } = req.params
-        data = await ASBMod.findById(asbid)
+        data = await ASBMod.findById(asbid).populate("author", "-_id name")
         if (!data) {
-            return resp.status(401).json({ message: "writeup not found" })
+            return resp.status(401).json({ message: "asb not found" })
         }
         resp.status(200).json({ message: data })
     } catch (err) {
@@ -83,7 +83,10 @@ async function getasbChap(req, resp) {
 
 async function getasbChaps(req, resp) {
     try {
-        data = await ASBMod.find()
+        data = await ASBMod.find().populate("author", "-_id name")
+        if (!data) {
+            return resp.status(401).json({ message: "asb not found" })
+        }
         resp.status(200).json({ message: data })
     } catch (err) {
         console.log(err)

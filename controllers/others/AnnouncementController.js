@@ -46,7 +46,10 @@ async function anonDelete(req, resp) {
 
 async function getanons(req, resp) {
     try {
-        data = await Announcements.find()
+        data = await Announcements.find().populate("author", "-_id name")
+        if (!data) {
+            return resp.status(404).json({ message: "no announcement found" })
+        }
         resp.status(200).json({ message: data })
     } catch (err) {
         console.log(err)

@@ -6,7 +6,7 @@ async function eventCreate(req, resp) {
         const { title, description, content, publicationDate, tags } = req.body
         const decodedToken = jwt.decode(req.headers.authorization)
         console.log(decodedToken)
-        
+
         const newEvent = new Events({
             title,
             description,
@@ -47,7 +47,7 @@ async function eventDelete(req, resp) {
 
 async function getEvents(req, resp) {
     try {
-        data = await Events.find()
+        data = await Events.find().populate("author", "-_id name")
         resp.status(200).json({ message: data })
     } catch (err) {
         console.log(err)
