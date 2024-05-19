@@ -4,7 +4,10 @@ const bcrypt = require("bcrypt")
 async function registerController(req, resp) {
     try {
         const { name, email, password, dob, phone_no } = req.body
-        // if user already there
+
+        if (!name || !email || !password || !dob || !phone_no) {
+            return resp.status(401).json({ message: "you're missing some field, will you please provide the complete information" })
+        }
         const browser_info = req.headers['user-agent']
         const ip_addr = req.ip || req.connection.remoteAddress
         const userexists = await Users.findOne({ email })
@@ -18,7 +21,7 @@ async function registerController(req, resp) {
             password: hashedPass,
             dob,
             phone_no,
-            role:"admin",
+            role: "admin",
             ip_addr,
             browser_info,
         })
