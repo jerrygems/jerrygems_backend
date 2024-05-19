@@ -15,12 +15,20 @@ router.delete("/delete", verifyAdmin, (req, resp, next) => {
     asbController.delete(req, resp, next)
 })// goes to corresponding controller
 
-router.get("/getasbchaps", (req, resp, next) => {
+router.get("/getasbchaps", verifyAdmin, (req, resp, next) => {
     asbController.getasbchaps(req, resp, next)
 })// goes to corresponding controller
 
-router.get("/getasbchap/:asbid", (req, resp, next) => {
+router.get("/getasbchap/:asbid", verifyAdmin, (req, resp, next) => {
     asbController.getasbchap(req, resp, next)
+})// goes to corresponding controller
+
+router.get("/asbchap/:asbid", (req, resp, next) => {
+    asbController.getasbchap(req, resp, next)
+})// goes to corresponding controller
+
+router.get("/asbchaps", (req, resp, next) => {
+    asbController.getasbchaps(req, resp, next)
 })// goes to corresponding controller
 
 module.exports = router

@@ -1,4 +1,5 @@
 const Users = require("../../models/UsersMod")
+const jwt = require("jsonwebtoken")
 
 async function getAllUsersInfo(req, resp) {
     try {
@@ -12,20 +13,26 @@ async function getAllUsersInfo(req, resp) {
 
 async function verifyRole(req, resp) {
     try {
-        const token = req.headers.authorization.split(' ')[1];
-        if (!token) {
-            return resp.status(401).send('Access Denied');
-        }
-        const verified = jwt.verify(token, process.env.JWT_SECRET);
-        resp.json({ role: verified.role });
+        const token = req.headers.authorization;
 
+        if (!token) {
+            return resp.status(401).send('Access Denied: Malformed token');
+        }
+
+        const verified = jwt.verify(token, process.env.SECRET_KEY)
+        if (verified.role === "admin") {
+            return resp.status(200).json({ message: 'admin' })
+        }
+        return resp.status(401).json({ message: "You don't have permission to access this content" });
+        next();
     } catch (err) {
-        console.log(err)
+        console.log('Error:', err);
+        resp.status(400).json({ message: "Invalid Token" });
     }
 }
 
 
 module.exports = {
     getAllUsersInfo: getAllUsersInfo,
-    verifyRole : verifyRole
+    verifyRole: verifyRole
 }
