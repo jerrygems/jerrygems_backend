@@ -13,7 +13,7 @@ async function asbCreate(req, resp) {
             content,
             author: decodedToken.userId,
             publicationDate,
-            tags
+            tags: tags.split(" ")
         })
         await newChap.save().catch(err => { console.log(err) })
         console.log("done")
@@ -51,17 +51,17 @@ async function asbUpdate(req, resp) {
 
 
 async function asbDelete(req, resp) {
+    const chap_id = req.query.sid
+
     try {
-        const chap_id = req.params.id
 
-        const existingChap = await ASBMod.findById(chap_id)
-        if (!existingChap) {
-            return resp.status(500).json("document doesn't exist already")
+        const deletedChap = await ASBMod.deleteOne({ _id: chap_id });
+
+        if (deletedChap.deletedCount === 0) {
+            return resp.status(404).json({ message: "Document not found" });
         }
-        existingChap.remove()
 
-
-        resp.status(200).json({ message: "chapter updated successfully" })
+        resp.status(200).json({ message: "chapter deleted successfully" })
     } catch (err) {
         resp.status(500).json({ message: "something went wrong " })
     }
@@ -82,12 +82,25 @@ async function getasbChap(req, resp) {
 }
 
 async function getasbChaps(req, resp) {
+    const page = parseInt(req.query.page) || 1;
+    console.log(page)
+    const perPage = 9;
     try {
-        data = await ASBMod.find().populate("author", "-_id name")
-        if (!data) {
+
+        const totalChaps = await ASBMod.countDocuments();
+        const maxPage = Math.ceil(totalChaps / perPage);
+        if (page > maxPage) {
+            return resp.status(404).json({ message: 'Invalid page number' });
+        }
+        const offset = (page - 1) * perPage
+
+        data = await ASBMod.find().populate("author", "-_id name").skip(offset).limit(perPage)
+
+        if (!data || data.length === 0) {
             return resp.status(401).json({ message: "asb not found" })
         }
-        resp.status(200).json({ message: data })
+
+        resp.status(200).json({ message: data, maxPage })
     } catch (err) {
         console.log(err)
         resp.status(401).json({ message: err.message })

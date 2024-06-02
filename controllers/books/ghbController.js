@@ -13,7 +13,7 @@ async function ghbCreate(req, resp) {
             content,
             author: decodedToken.userId,
             publicationDate,
-            tags
+            tags: tags.split(" ")
         })
         await newChap.save().catch(err => { console.log(err) })
         console.log("done")
@@ -45,23 +45,23 @@ async function ghbUpdate(req, resp) {
         await existingChap.save()
         resp.status(200).json({ message: "chapter updated successfully" })
     } catch (err) {
-        resp.status(500).json({ message: "something went wrong ",err })
+        resp.status(500).json({ message: "something went wrong ", err })
     }
 }
 
 
 async function ghbDelete(req, resp) {
+    const chap_id = req.query.sid
+
     try {
-        const chap_id = req.params.id
 
-        const existingChap = await GHBMod.findById(chap_id)
-        if (!existingChap) {
-            return resp.status(500).json("document doesn't exist already")
+        const deletedChap = await GHBMod.deleteOne({ _id: chap_id });
+
+        if (deletedChap.deletedCount === 0) {
+            return resp.status(404).json({ message: "Document not found" });
         }
-        existingChap.remove()
 
-
-        resp.status(200).json({ message: "chapter updated successfully" })
+        resp.status(200).json({ message: "chapter deleted successfully" })
     } catch (err) {
         resp.status(500).json({ message: "something went wrong " })
     }
@@ -70,7 +70,7 @@ async function ghbDelete(req, resp) {
 async function getghbChap(req, resp) {
     try {
         const { ghbid } = req.params
-        data = await GHBMod.findById(ghbid).populate("author","-_id name")
+        data = await GHBMod.findById(ghbid).populate("author", "-_id name")
         if (!data) {
             return resp.status.json({ message: "writeup not found" })
         }
@@ -82,12 +82,24 @@ async function getghbChap(req, resp) {
 }
 
 async function getghbChaps(req, resp) {
+    const page = parseInt(req.query.page) || 1;
+    const perPage = 9;
     try {
-        data = await GHBMod.find().populate("author","-_id name")
-        if (!data) {
-            return resp.status.json({ message: "writeup not found" })
+
+        const totalChaps = await GHBMod.countDocuments();
+        const maxPage = Math.ceil(totalChaps / perPage);
+        if (page > maxPage) {
+            return resp.status(404).json({ message: 'Invalid page number' });
         }
-        resp.status(200).json({ message: data })
+        const offset = (page - 1) * perPage
+
+        data = await GHBMod.find().populate("author", "-_id name").skip(offset).limit(perPage)
+
+        if (!data || data.length === 0) {
+            return resp.status(401).json({ message: "asb not found" })
+        }
+
+        resp.status(200).json({ message: data, maxPage })
     } catch (err) {
         console.log(err)
         resp.status(401).json({ message: err.message })

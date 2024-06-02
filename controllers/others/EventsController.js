@@ -13,7 +13,7 @@ async function eventCreate(req, resp) {
             content,
             author: decodedToken.userId,
             publicationDate,
-            tags
+            tags:tags.split(" ")
         })
         await newEvent.save().catch(err => { console.log(err) })
         console.log("done")

@@ -13,7 +13,7 @@ async function khbCreate(req, resp) {
             content,
             author: decodedToken.userId,
             publicationDate,
-            tags
+            keywords: tags.split(" ")
         })
         await newChap.save().catch(err => { console.log(err) })
         console.log("done")
@@ -51,15 +51,15 @@ async function khbUpdate(req, resp) {
 
 
 async function khbDelete(req, resp) {
+    const chap_id = req.query.sid
+
     try {
-        const chap_id = req.params.id
 
-        const existingChap = await KHBMod.findById(chap_id)
-        if (!existingChap) {
-            return resp.status(500).json("document doesn't exist already")
+        const deletedChap = await KHBMod.deleteOne({ _id: chap_id });
+
+        if (deletedChap.deletedCount === 0) {
+            return resp.status(404).json({ message: "Document not found" });
         }
-        existingChap.remove()
-
 
         resp.status(200).json({ message: "chapter updated successfully" })
     } catch (err) {
@@ -82,12 +82,24 @@ async function getkhbChap(req, resp) {
 }
 
 async function getkhbChaps(req, resp) {
+    const page = parseInt(req.query.page) || 1;
+    const perPage = 9;
     try {
-        data = await KHBMod.find().populate("author", "-_id name")
-        if (!data) {
-            return resp.status.json({ message: "writeup not found" })
+
+        const totalChaps = await KHBMod.countDocuments();
+        const maxPage = Math.ceil(totalChaps / perPage);
+        if (page > maxPage) {
+            return resp.status(404).json({ message: 'Invalid page number' });
         }
-        resp.status(200).json({ message: data })
+        const offset = (page - 1) * perPage
+
+        data = await KHBMod.find().populate("author", "-_id name").skip(offset).limit(perPage)
+
+        if (!data || data.length === 0) {
+            return resp.status(401).json({ message: "asb not found" })
+        }
+
+        resp.status(200).json({ message: data, maxPage })
     } catch (err) {
         console.log(err)
         resp.status(401).json({ message: err.message })

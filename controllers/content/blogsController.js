@@ -13,7 +13,7 @@ async function blogsCreate(req, resp) {
             content,
             author: decodedToken.userId,
             publicationDate,
-            tags
+            tags: tags.split(" ")
         })
         await newBlog.save().catch(err => { console.log(err) })
         console.log("done")
@@ -44,29 +44,41 @@ async function blogsUpdate(req, resp) {
     }
 }
 
-// async function blogsDelete(req, resp) {
-//     try {
-//         const blog_id = req.params.id
-//         const existingBlog = await BlogsMod.findById(blog_id)
-//         if (!existingBlog) {
-//             return resp.status(500).json({ message: "blog doesn't exists" })
-//         }
-//         existingBlog.remove()
-//         return resp.status(200).json({ message: "removed successfully" })
-//     } catch (err) {
-//         return resp.status(500).json({ message: message.err })
-//     }
+async function blogsDelete(req, resp) {
+    const chap_id = req.query.sid
+    try {
+        const deletedChap = await BlogsMod.deleteOne({ _id: chap_id });
 
-// }
+        if (deletedChap.deletedCount === 0) {
+            return resp.status(404).json({ message: "Document not found" });
+        }
+
+        resp.status(200).json({ message: "blog deleted successfully" })
+    } catch (err) {
+        resp.status(500).json({ message: "something went wrong " })
+    }
+}
 
 // get requests here
 async function getallblogs(req, resp) {
+    const page = parseInt(req.query.page) || 1;
+    const perPage = 9;
+
     try {
-        data = await BlogsMod.find().populate("author", "-_id name")
-        if (!data) {
-            return resp.status.json({ message: "blog not found" })
+        const totalChaps = await BlogsMod.countDocuments();
+        const maxPage = Math.ceil(totalChaps / perPage);
+        if (page > maxPage) {
+            return resp.status(404).json({ message: 'Invalid page number' });
         }
-        resp.status(200).json({ message: data })
+        const offset = (page - 1) * perPage
+
+        data = await BlogsMod.find().populate("author", "-_id name").skip(offset).limit(perPage)
+
+        if (!data || data.length === 0) {
+            return resp.status(401).json({ message: "asb not found" })
+        }
+
+        resp.status(200).json({ message: data, maxPage })
     } catch (err) {
         console.log(err)
         resp.status(401).json({ message: err.message })
@@ -90,7 +102,7 @@ async function getblog(req, resp) {
 module.exports = {
     create: blogsCreate,
     update: blogsUpdate,
-    // delete: blogsDelete,
+    delete: blogsDelete,
     getallblogs: getallblogs,
     getblog: getblog
 }

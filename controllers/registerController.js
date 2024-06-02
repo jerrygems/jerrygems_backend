@@ -21,7 +21,7 @@ async function registerController(req, resp) {
             password: hashedPass,
             dob,
             phone_no,
-            role: "admin",
+            role: "user",
             ip_addr,
             browser_info,
         })

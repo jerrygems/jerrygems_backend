@@ -12,7 +12,7 @@ async function anonCreate(req, resp) {
             content,
             author: decodedToken.userId,
             publicationDate,
-            tags
+            keywords:tags.split(" ")
         })
         await newAnon.save().catch(err => { console.log(err) })
         console.log("done")

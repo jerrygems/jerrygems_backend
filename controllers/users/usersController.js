@@ -26,7 +26,7 @@ async function verifyRole(req, resp) {
         return resp.status(401).json({ message: "You don't have permission to access this content" });
         next();
     } catch (err) {
-        console.log('Error:', err);
+        // console.log('Error:', err);
         resp.status(400).json({ message: "Invalid Token" });
     }
 }

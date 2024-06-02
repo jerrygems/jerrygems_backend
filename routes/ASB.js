@@ -27,7 +27,7 @@ router.get("/asbchap/:asbid", (req, resp, next) => {
     asbController.getasbchap(req, resp, next)
 })// goes to corresponding controller
 
-router.get("/asbchaps", (req, resp, next) => {
+router.get("/asbchaps/:page", (req, resp, next) => {
     asbController.getasbchaps(req, resp, next)
 })// goes to corresponding controller
 
