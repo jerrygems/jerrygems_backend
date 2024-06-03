@@ -9,5 +9,4 @@ const WriteUpsSchema = new mongoose.Schema({
 })
 
 const WriteUps = mongoose.model('WriteUps', WriteUpsSchema)
-
 module.exports = WriteUps;

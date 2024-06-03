@@ -9,6 +9,7 @@ const KHBSchema = new mongoose.Schema({
     keywords: [{ type: String }]
 })
 
+
 const KHB = mongoose.model('KernelHackingBook', KHBSchema)
 
 module.exports = KHB;

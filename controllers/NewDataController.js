@@ -29,6 +29,89 @@ async function latest(req, resp) {
         resp.status(401).json({ message: err.message })
     }
 }
+
+
+
+
+async function getLatestSearch(req, resp) {
+    try {
+        let query = req.query.key;
+        query = query.trim();
+        query = query.replace(/\s+/g, ' ');
+        query = query.replace(/[^\w\s]/gi, '');
+
+        const regexQuery = new RegExp(query, 'i');
+        const rest1 = await ASB.find({
+            $or: [
+                { chap_no: { $regex: regexQuery } },
+                { title: { $regex: regexQuery } },
+                { description: { $regex: regexQuery } },
+                { content: { $regex: regexQuery } },
+                { keywords: { $regex: regexQuery } }
+            ]
+        });
+
+        const rest2 = await GHB.find({
+            $or: [
+                { chap_no: { $regex: regexQuery } },
+                { description: { $regex: regexQuery } },
+                { content: { $regex: regexQuery } },
+                { keywords: { $regex: regexQuery } }
+            ]
+        });
+
+        const rest3 = await KHB.find({
+            $or: [
+                { chap_no: { $regex: regexQuery } },
+                { description: { $regex: regexQuery } },
+                { content: { $regex: regexQuery } },
+                { keywords: { $regex: regexQuery } }
+            ]
+        });
+
+        const rest4 = await Blogs.find({
+            $or: [
+                { title: { $regex: regexQuery } },
+                { description: { $regex: regexQuery } },
+                { content: { $regex: regexQuery } },
+                { tags: { $regex: regexQuery } }
+            ]
+        });
+
+        const rest5 = await Writeups.find({
+            $or: [
+                { title: { $regex: regexQuery } },
+                { description: { $regex: regexQuery } },
+                { content: { $regex: regexQuery } },
+                { tags: { $regex: regexQuery } }
+            ]
+        });
+        // Note: Since we're using regex, we don't have a relevance score to sort by
+        // If you have a way to determine relevance, you can sort based on that criteria
+
+        const taggedResults = [
+            ...rest1.map(doc => ({ ...doc.toObject(), source: 'asb' })),
+            ...rest2.map(doc => ({ ...doc.toObject(), source: 'ghb' })),
+            ...rest3.map(doc => ({ ...doc.toObject(), source: 'khb' })),
+            ...rest4.map(doc => ({ ...doc.toObject(), source: 'blogs' })),
+            ...rest5.map(doc => ({ ...doc.toObject(), source: 'writeups' }))
+        ];
+
+        resp.status(200).json({ results: taggedResults });
+    } catch (err) {
+        console.log(err);
+        resp.status(401).json({ message: err.message });
+    }
+}
+
+
+
+
+
+
+
+
+
 async function latestEventsAndAnons(req, resp) {
     try {
 
@@ -49,5 +132,6 @@ async function latestEventsAndAnons(req, resp) {
 
 module.exports = {
     latest: latest,
+    search: getLatestSearch,
     eventandanons: latestEventsAndAnons
 }

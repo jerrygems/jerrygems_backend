@@ -6,7 +6,7 @@ const GHBSchema = new mongoose.Schema({
     content: { type: String, required: true },
     author: { type: mongoose.Schema.Types.ObjectId, ref: 'Users', required: true },
     publicationDate: { type: Date, default: Date.now },
-    ketwords: [{ type: String }]
+    keywords: [{ type: String }]
 })
 
 const GHB = mongoose.model('GameHackingBook', GHBSchema)

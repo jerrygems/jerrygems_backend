@@ -7,7 +7,6 @@ const BlogsSchema = new mongoose.Schema({
     publicationDate: { type: Date, default: Date.now },
     tags: [{ type: String }]
 })
-
 const Blogs = mongoose.model('Blogs', BlogsSchema)
 
 module.exports = Blogs;
